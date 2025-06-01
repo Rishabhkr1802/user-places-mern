@@ -1,21 +1,30 @@
-import express from "express";
-import dotenv from "dotenv";
-// import bodyParser, { urlencoded } from "body-parser";
+import express    from "express";
+import dotenv     from "dotenv";
+import bodyParser from "body-parser";
+
+import userRoutes from "./route/user-route.js";
+import HttpError  from "./models/http-errors-model.js";
 
 dotenv.config();
 const port = process.env.PORT;
-const app = express();
-// const body = bodyParser(urlencoded({extended: false}));
+const app  = express();
+app.use(bodyParser.json());
 
-app.use('/', (req, res, next) => {
-    console.log('node works');
+app.use('/api', userRoutes);
+
+// Not Found Route Error
+app.use((req, res, next) => {
+    const error = new HttpError('Could not find this route.', 404);
+    throw error;
 });
 
 // For default Error
-app.use('/', (error, req, res, next) => {
-    let err = error;
-    err.code = 500;
-    throw new Error(err.message || "An internal server occured"); // or return next(Error ....);
+app.use((error, req, res, next) => {
+    if (res.headerSent) {
+        return next(error);
+    }
+    res.status(error.code || 500)
+    res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
-app.listen(port, () => console.log(`Server is running at port no:- ${port}`));
+app.listen(port);
