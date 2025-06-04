@@ -1,7 +1,7 @@
 function App() {
   return (
     <>
-      <h1>React Work's</h1>
+      <h1>This is App Component</h1>
     </>
   )
 }
