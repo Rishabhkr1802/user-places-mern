@@ -1,14 +1,30 @@
-import express    from "express";
-import dotenv     from "dotenv";
-import bodyParser from "body-parser";
+import express      from "express";
+import dotenv       from "dotenv";
+import cors         from "cors";
+import bodyParser   from "body-parser";
+import cookieParser from "cookie-parser";
 
 import userRoutes from "./route/user-route.js";
 import HttpError  from "./models/http-errors-model.js";
 
-dotenv.config();
+dotenv.config({
+    path : './.env',
+});
+
 const port = process.env.PORT;
 const app  = express();
-app.use(bodyParser.json());
+
+app.use(cors({
+    origin      : process.env.CORS_ORIGIN,
+    credentials : true,
+}))
+
+app.use(bodyParser.json()); // now for new version of node this is not needed due to builtin functionality
+app.use(express.json({ limit: '16kb' }));  //for form data
+app.use(express.urlencoded({extended: true, limit: '16kb'})); //for data which comes from url
+app.use(express.static("public")) //for file save on local server
+app.use(cookieParser());
+
 
 app.use('/api', userRoutes);
 
