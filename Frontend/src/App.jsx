@@ -1,7 +1,9 @@
+import Router from "./routes/Router";
+
 function App() {
   return (
     <>
-      <h1>This is App Component</h1>
+      <Router />
     </>
   )
 }
